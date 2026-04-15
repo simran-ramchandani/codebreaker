@@ -395,10 +395,86 @@ function finishUserPath() {
     log('Path did not reach node B', 'warn');
     return;
   }
+<<<<<<< HEAD
+  if (state.mode === MODE.VISIT && !pathVisitsAllRequired(state.userPath, state.requiredNodes)) {
+    log('Path is invalid: all required (!) nodes must be visited before B.', 'warn');
+    return;
+  }
+=======
+>>>>>>> 0524b40ed016a08e3a29a08d1fc7d2196cbcba14
   log(`Path complete! ${state.userPath.length - 1} steps. Run solve to compare.`, 'ok');
   updateUserStats();
 }
 
+<<<<<<< HEAD
+function permutations(items) {
+  if (items.length <= 1) return [items.slice()];
+  const out = [];
+  for (let i = 0; i < items.length; i++) {
+    const current = items[i];
+    const rest = items.slice(0, i).concat(items.slice(i + 1));
+    const tailPerms = permutations(rest);
+    for (const tail of tailPerms) out.push([current, ...tail]);
+  }
+  return out;
+}
+
+function mergeSegmentPath(merged, segmentPath) {
+  if (!segmentPath || segmentPath.length === 0) return merged;
+  if (merged.length === 0) return segmentPath.slice();
+  return merged.concat(segmentPath.slice(1));
+}
+
+function solveVisitAll(rows, cols, grid, start, end, requiredNodes) {
+  const mustVisit = (requiredNodes || []).slice();
+  const orders = permutations(mustVisit);
+  const candidates = orders.length ? orders : [[]];
+
+  let best = null;
+  for (const order of candidates) {
+    const route = [start, ...order, end];
+    let totalCost = 0;
+    let totalSteps = 0;
+    let combinedPath = [];
+    let combinedExplored = [];
+    let possible = true;
+
+    for (let i = 0; i < route.length - 1; i++) {
+      const seg = PathEngine.astar(grid, route[i], route[i + 1], rows, cols);
+      if (!seg.found || !seg.path || seg.path.length === 0) {
+        possible = false;
+        break;
+      }
+      totalCost += seg.cost;
+      totalSteps += seg.steps;
+      combinedPath = mergeSegmentPath(combinedPath, seg.path);
+      combinedExplored = combinedExplored.concat(seg.explored || []);
+    }
+
+    if (!possible) continue;
+    if (!best || totalCost < best.cost || (totalCost === best.cost && totalSteps < best.steps)) {
+      best = {
+        path: combinedPath,
+        steps: totalSteps,
+        cost: totalCost,
+        explored: combinedExplored,
+        found: true,
+      };
+    }
+  }
+
+  if (!best) return { path: [], steps: -1, cost: Infinity, explored: [], found: false };
+  return best;
+}
+
+function pathVisitsAllRequired(path, requiredNodes) {
+  if (!requiredNodes || requiredNodes.length === 0) return true;
+  const visited = new Set((path || []).map(p => `${p.r},${p.c}`));
+  return requiredNodes.every(n => visited.has(`${n.r},${n.c}`));
+}
+
+=======
+>>>>>>> 0524b40ed016a08e3a29a08d1fc7d2196cbcba14
 /* ──────────────────────────────────────────────
    CANVAS EVENTS
 ────────────────────────────────────────────── */
@@ -473,8 +549,15 @@ function solve() {
     result = PathEngine.bfs(grid, start, end, rows, cols);
   } else if (mode === MODE.DIJKSTRA) {
     result = PathEngine.dijkstra(grid, start, end, rows, cols);
+<<<<<<< HEAD
+  } else if (mode === MODE.ASTAR) {
+    result = PathEngine.astar(grid, start, end, rows, cols);
+  } else if (mode === MODE.VISIT) {
+    result = solveVisitAll(rows, cols, grid, start, end, state.requiredNodes);
+=======
   } else if (mode === MODE.ASTAR || mode === MODE.VISIT) {
     result = PathEngine.astar(grid, start, end, rows, cols);
+>>>>>>> 0524b40ed016a08e3a29a08d1fc7d2196cbcba14
   }
 
   state.result = result;
@@ -532,11 +615,22 @@ function updateOptimalStats(result) {
 
 function updateUserStats() {
   const u = PathEngine.evalUserPath(state.userPath, state.grid, state.rows, state.cols);
+<<<<<<< HEAD
+  const requiredOk = state.mode !== MODE.VISIT || pathVisitsAllRequired(state.userPath, state.requiredNodes);
+  if (u.valid && requiredOk) {
+=======
   if (u.valid) {
+>>>>>>> 0524b40ed016a08e3a29a08d1fc7d2196cbcba14
     setText('stat-usr-steps', u.steps);
     setText('stat-usr-cost', u.cost);
     setClass('stat-usr-steps', 'amber');
     setClass('stat-usr-cost', 'amber');
+<<<<<<< HEAD
+  } else {
+    setText('stat-usr-steps', '--');
+    setText('stat-usr-cost', '--');
+=======
+>>>>>>> 0524b40ed016a08e3a29a08d1fc7d2196cbcba14
   }
 }
 
@@ -565,13 +659,24 @@ function updateScoreBanner(result, userPath) {
   }
 
   const u = PathEngine.evalUserPath(userPath, state.grid, state.rows, state.cols);
+<<<<<<< HEAD
+  const requiredOk = state.mode !== MODE.VISIT || pathVisitsAllRequired(userPath, state.requiredNodes);
+=======
+>>>>>>> 0524b40ed016a08e3a29a08d1fc7d2196cbcba14
   const end = getEnd();
   const reachedEnd = userPath.length > 0 &&
     userPath[userPath.length-1].r === end.r &&
     userPath[userPath.length-1].c === end.c;
 
+<<<<<<< HEAD
+  if (!u.valid || !reachedEnd || !requiredOk) {
+    msg.textContent = !requiredOk
+      ? 'Your path is invalid: in Visit All mode it must include every required (!) node.'
+      : 'Your path is invalid or did not reach node B.';
+=======
   if (!u.valid || !reachedEnd) {
     msg.textContent = 'Your path is invalid or did not reach node B.';
+>>>>>>> 0524b40ed016a08e3a29a08d1fc7d2196cbcba14
     badge.textContent = 'INVALID';
     badge.className = 'score-badge bad';
     setText('stat-efficiency', '0%');

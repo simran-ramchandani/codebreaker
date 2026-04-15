@@ -151,6 +151,81 @@ const PathEngine = (() => {
     return { path: [], steps: -1, cost: Infinity, explored, found: false };
   }
 
+  // ── Visit all required nodes ───────────────────────────────
+  function permutations(items) {
+    const out = [];
+    const used = new Array(items.length).fill(false);
+    const cur = [];
+    function dfs() {
+      if (cur.length === items.length) {
+        out.push(cur.slice());
+        return;
+      }
+      for (let i = 0; i < items.length; i++) {
+        if (used[i]) continue;
+        used[i] = true;
+        cur.push(items[i]);
+        dfs();
+        cur.pop();
+        used[i] = false;
+      }
+    }
+    dfs();
+    return out;
+  }
+
+  function visitAll(grid, start, end, requiredNodes, rows, cols) {
+    const required = Array.isArray(requiredNodes) ? requiredNodes.slice() : [];
+    if (required.length === 0) return astar(grid, start, end, rows, cols);
+
+    const orders = permutations(required);
+    let best = null;
+
+    for (const order of orders) {
+      const points = [start, ...order, end];
+      let totalCost = 0;
+      let fullPath = [];
+      let fullExplored = [];
+      let ok = true;
+
+      for (let i = 0; i < points.length - 1; i++) {
+        const seg = astar(grid, points[i], points[i + 1], rows, cols);
+        if (!seg.found || !seg.path || seg.path.length < 2) {
+          ok = false;
+          break;
+        }
+        totalCost += seg.cost;
+        fullExplored = fullExplored.concat(seg.explored || []);
+        if (fullPath.length === 0) {
+          fullPath = seg.path.slice();
+        } else {
+          // Avoid duplicating joint waypoint.
+          fullPath = fullPath.concat(seg.path.slice(1));
+        }
+      }
+
+      if (!ok || fullPath.length < 2) continue;
+
+      const candidate = {
+        path: fullPath,
+        steps: fullPath.length - 1,
+        cost: totalCost,
+        explored: fullExplored,
+        found: true,
+      };
+
+      if (
+        !best ||
+        candidate.cost < best.cost ||
+        (candidate.cost === best.cost && candidate.steps < best.steps)
+      ) {
+        best = candidate;
+      }
+    }
+
+    return best || { path: [], steps: -1, cost: Infinity, explored: [], found: false };
+  }
+
   // ── MinHeap ───────────────────────────────────────────────
   class MinHeap {
     constructor(cmp) { this._h = []; this._cmp = cmp; }
@@ -197,7 +272,7 @@ const PathEngine = (() => {
   }
 
   // ── public API ────────────────────────────────────────────
-  return { bfs, dijkstra, astar, evalUserPath };
+  return { bfs, dijkstra, astar, visitAll, evalUserPath };
 })();
 
 // Export for Node / browser

@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
   "algorithm": "A*",
   "found": true,
@@ -11,17 +10,3 @@
   "userCost": 5,
   "efficiency": 340
 }
-=======
-{
-  "algorithm": "A*",
-  "found": true,
-  "optimalPath": [{"r":7,"c":1},{"r":7,"c":2},{"r":7,"c":3},{"r":7,"c":4},{"r":7,"c":5},{"r":7,"c":6},{"r":7,"c":7},{"r":7,"c":8},{"r":7,"c":9},{"r":7,"c":10},{"r":7,"c":11},{"r":7,"c":12},{"r":7,"c":13},{"r":7,"c":14},{"r":7,"c":15},{"r":7,"c":16},{"r":7,"c":17},{"r":7,"c":18}],
-  "optimalSteps": 17,
-  "optimalCost": 17,
-  "nodesExplored": 18,
-  "userPath": [{"r":7,"c":1},{"r":7,"c":2},{"r":7,"c":3},{"r":7,"c":4},{"r":7,"c":5},{"r":7,"c":18}],
-  "userSteps": 5,
-  "userCost": 5,
-  "efficiency": 340
-}
->>>>>>> 0524b40ed016a08e3a29a08d1fc7d2196cbcba14

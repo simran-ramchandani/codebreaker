@@ -22,20 +22,20 @@ const TOOL = { WALL: 'wall', ERASE: 'erase', WEIGHT: 'weight', PATH: 'path' };
 const MODE = { BFS: 'bfs', DIJKSTRA: 'dijkstra', ASTAR: 'astar', VISIT: 'visit' };
 
 const COLOR = {
-  bg:       '#070b14',
-  open:     '#0d1829',
-  wall:     '#060a12',
-  start:    '#00ff88',
-  end:      '#ff3060',
-  optimal:  '#00e5ff',
-  user:     '#ffaa00',
-  visited:  '#101e35',
-  required: '#a855f7',
-  w2:       '#122030',
-  w3:       '#0f1828',
-  w4:       '#0c1420',
-  grid:     '#1a2e50',
-  hover:    'rgba(0,229,255,0.12)',
+  bg:       '#0f1f1a',
+  open:     '#1f3a33',
+  wall:     '#0f1f1a',
+  start:    '#9bbc0f',
+  end:      '#d8f0c0',
+  optimal:  '#d8f0c0',
+  user:     '#fff700',
+  visited:  '#9cbc0f53',
+  required: '#d8f0c0',
+  w2:       '#3a706190',
+  w3:       '#3a706163',
+  w4:       '#3a70614a',
+  grid:     '#162b25',
+  hover:    'rgba(216,240,192,0.16)',
 };
 
 let state = {
@@ -188,7 +188,7 @@ function drawCell(r, c, fill, label, labelColor) {
   // Weight label
   const v = state.grid[r][c];
   if (!getSpecial(r,c) && v > 1 && v <= 4 && fill !== COLOR.wall) {
-    ctx.fillStyle = 'rgba(200,220,240,0.3)';
+    ctx.fillStyle = 'rgba(202, 222, 241, 0.65)';
     ctx.font = `bold 10px "JetBrains Mono"`;
     ctx.textAlign = 'right';
     ctx.textBaseline = 'bottom';
@@ -215,8 +215,8 @@ function drawGrid() {
       let fill = cellColor(r, c);
       let label = null, lc = null;
       if (sp === 'S') { label = 'A'; lc = '#000'; }
-      if (sp === 'E') { label = 'B'; lc = '#fff'; }
-      if (sp === 'R') { label = '!'; lc = '#fff'; }
+      if (sp === 'E') { label = 'B'; lc = '#000000'; }
+      if (sp === 'R') { label = '!'; lc = '#000000'; }
       drawCell(r, c, fill, label, lc);
     }
   }
@@ -558,11 +558,13 @@ function updateScoreBanner(result, userPath) {
   const badge  = document.getElementById('score-badge');
   if (!banner || !result.found) return;
   banner.style.display = 'flex';
+  banner.classList.remove('valid', 'invalid');
 
   if (!userPath || userPath.length < 2) {
     msg.textContent = 'No user path drawn. Draw a path from A to B using the PATH tool.';
     badge.textContent = 'N/A';
     badge.className = 'score-badge ok';
+    banner.classList.add('invalid');
     return;
   }
 
@@ -576,6 +578,7 @@ function updateScoreBanner(result, userPath) {
     msg.textContent = 'Your path is invalid or did not reach node B.';
     badge.textContent = 'INVALID';
     badge.className = 'score-badge bad';
+    banner.classList.add('invalid');
     setText('stat-efficiency', '0%');
     return;
   }
@@ -587,11 +590,14 @@ function updateScoreBanner(result, userPath) {
       msg.textContent = `Wrong output: visit all required (!) nodes. Missing ${missingRequired.length}.`;
       badge.textContent = 'WRONG';
       badge.className = 'score-badge bad';
+      banner.classList.add('invalid');
       setText('stat-efficiency', '0%');
       setClass('stat-efficiency', 'red');
       return;
     }
   }
+
+  banner.classList.add('valid');
 
   const eff = result.steps > 0 ? Math.round(100 * result.steps / u.steps) : 0;
   setText('stat-efficiency', eff + '%');

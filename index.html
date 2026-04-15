@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Breaker — Multi-Objective Pathfinding Puzzle</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- ── HEADER ── -->
+  <header>
+    <div class="logo">
+      <span class="logo-title">CODE BREAKER</span>
+      <span class="logo-sub">pathfinding engine v1.0</span>
+    </div>
+    <div class="status-bar">
+      <div class="status-dot"></div>
+      <span>SYSTEM ONLINE</span>
+      <span>|</span>
+      <span>BFS · DIJKSTRA · A*</span>
+    </div>
+  </header>
+
+  <!-- ── MAIN ── -->
+  <main>
+
+    <!-- LEFT PANEL -->
+    <aside class="panel-left">
+
+      <!-- Mode selector -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">⚡</span>
+          <h3>Game Mode</h3>
+        </div>
+        <div class="panel-body">
+          <div class="mode-group">
+            <button class="mode-btn active" data-mode="bfs">
+              Shortest Path
+              <span class="mode-algo">Algorithm: BFS</span>
+            </button>
+            <button class="mode-btn" data-mode="dijkstra">
+              Weighted Path
+              <span class="mode-algo">Algorithm: Dijkstra</span>
+            </button>
+            <button class="mode-btn" data-mode="astar">
+              Heuristic Pathfinding
+              <span class="mode-algo">Algorithm: A*</span>
+            </button>
+            <button class="mode-btn" data-mode="visit">
+              Visit All Nodes
+              <span class="mode-algo">Algorithm: A* + waypoints</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tools -->
+      <div class="panel" style="margin-top:10px">
+        <div class="panel-header">
+          <span class="panel-icon">🛠</span>
+          <h3>Drawing Tools</h3>
+        </div>
+        <div class="panel-body">
+          <div class="tool-group">
+            <button class="tool-btn active" data-tool="path">PATH</button>
+            <button class="tool-btn" data-tool="wall">WALL</button>
+            <button class="tool-btn" data-tool="erase">ERASE</button>
+            <button class="tool-btn" data-tool="weight">WEIGHT</button>
+          </div>
+          <div style="margin-bottom:10px; font-size:0.65rem; color:var(--text-dim); line-height:1.6;">
+            <strong style="color:var(--text)">PATH</strong> — drag from A to B<br>
+            <strong style="color:var(--text)">WALL</strong> — click/drag to block<br>
+            <strong style="color:var(--text)">ERASE</strong> — remove walls<br>
+            <strong style="color:var(--text)">WEIGHT</strong> — set cell cost
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <label style="font-size:0.65rem;color:var(--text-dim);">Weight:</label>
+            <select id="weight-level">
+              <option value="2">2 (low)</option>
+              <option value="3">3 (med)</option>
+              <option value="4">4 (high)</option>
+            </select>
+          </div>
+          <label style="display:flex;align-items:center;gap:8px;font-size:0.65rem;color:var(--text-dim);cursor:pointer">
+            <input type="checkbox" id="show-visited" checked style="accent-color:var(--cyan)">
+            Show visited cells
+          </label>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="panel" style="margin-top:10px">
+        <div class="panel-header">
+          <span class="panel-icon">▶</span>
+          <h3>Controls</h3>
+        </div>
+        <div class="panel-body">
+          <div class="btn-group">
+            <button class="btn btn-primary" id="btn-solve">▶ SOLVE</button>
+            <button class="btn btn-secondary" id="btn-clear-path">✕ Clear Path</button>
+            <button class="btn btn-secondary" id="btn-clear-walls">◻ Clear Walls</button>
+            <button class="btn btn-danger" id="btn-new-grid">⟳ New Grid</button>
+          </div>
+          <div style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <label style="font-size:0.65rem;color:var(--text-dim);">Anim speed</label>
+              <span id="speed-label" style="font-size:0.65rem;color:var(--cyan);">3</span>
+            </div>
+            <input type="range" id="anim-speed" min="1" max="10" value="3" style="width:100%">
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- CENTER: GRID -->
+    <section class="grid-area">
+      <div class="grid-container" id="grid-container">
+        <canvas id="grid-canvas"></canvas>
+        <canvas id="path-overlay" class="path-overlay"></canvas>
+      </div>
+
+      <!-- Score banner -->
+      <div class="score-banner" id="score-banner" style="display:none">
+        <span class="score-msg" id="score-msg">Run the solver to compare paths.</span>
+        <span class="score-badge ok" id="score-badge">--</span>
+      </div>
+
+      <!-- Log -->
+      <div class="panel" style="width:100%">
+        <div class="panel-header">
+          <span class="panel-icon">📡</span>
+          <h3>System Log</h3>
+        </div>
+        <div class="panel-body" style="padding:8px">
+          <div class="log-box" id="log-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL -->
+    <aside class="panel-right">
+
+      <!-- Stats -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-icon">📊</span>
+          <h3>Statistics</h3>
+        </div>
+        <div class="panel-body">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Optimal Steps</div>
+              <div class="stat-value cyan" id="stat-opt-steps">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Optimal Cost</div>
+              <div class="stat-value cyan" id="stat-opt-cost">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Your Steps</div>
+              <div class="stat-value amber" id="stat-usr-steps">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Your Cost</div>
+              <div class="stat-value amber" id="stat-usr-cost">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Cells Explored</div>
+              <div class="stat-value" id="stat-explored">--</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Efficiency</div>
+              <div class="stat-value green" id="stat-efficiency">--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Algorithm comparison -->
+      <div class="panel" style="margin-top:10px">
+        <div class="panel-header">
+          <span class="panel-icon">⚖</span>
+          <h3>Algorithm Compare</h3>
+        </div>
+        <div class="panel-body">
+          <div class="algo-comparison">
+            <div class="algo-row">
+              <span class="algo-name">BFS — Steps</span>
+              <span class="algo-val" id="algo-bfs-steps">--</span>
+            </div>
+            <div class="algo-row">
+              <span class="algo-name">BFS — Explored</span>
+              <span class="algo-val" id="algo-bfs-expl">--</span>
+            </div>
+            <div class="algo-row">
+              <span class="algo-name">Dijkstra — Cost</span>
+              <span class="algo-val" id="algo-dij-cost">--</span>
+            </div>
+            <div class="algo-row">
+              <span class="algo-name">Dijkstra — Explored</span>
+              <span class="algo-val" id="algo-dij-expl">--</span>
+            </div>
+            <div class="algo-row">
+              <span class="algo-name">A* — Cost</span>
+              <span class="algo-val" id="algo-ast-cost">--</span>
+            </div>
+            <div class="algo-row">
+              <span class="algo-name">A* — Explored</span>
+              <span class="algo-val" id="algo-ast-expl">--</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Legend -->
+      <div class="panel" style="margin-top:10px">
+        <div class="panel-header">
+          <span class="panel-icon">🗺</span>
+          <h3>Legend</h3>
+        </div>
+        <div class="panel-body">
+          <div class="legend">
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#00ff88"></div>
+              <span>Start node (A)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#ff3060"></div>
+              <span>End node (B)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#a855f7"></div>
+              <span>Required node (!)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#060a12;border:1px solid #1e3a5f"></div>
+              <span>Wall / obstacle</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#0d1829"></div>
+              <span>Open cell (cost 1)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#122030"></div>
+              <span>Weighted cell (cost 2–4)</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#101e35"></div>
+              <span>Visited / explored</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#00e5ff"></div>
+              <span>Optimal path</span>
+            </div>
+            <div class="legend-item">
+              <div class="legend-swatch" style="background:#ffaa00"></div>
+              <span>Your path</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+  </main>
+
+  <!-- ── FOOTER ── -->
+  <footer>
+    <span>Code Breaker — Multi-Objective Pathfinding Puzzle</span>
+    <span>BFS · Dijkstra · A* | C++ + JS implementation</span>
+  </footer>
+
+</div>
+
+<script src="js/algorithms.js"></script>
+<script src="js/game.js"></script>
+</body>
+</html>

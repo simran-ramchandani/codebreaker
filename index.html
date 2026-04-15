@@ -10,19 +10,13 @@
 
 <div class="app-shell">
 
-  <!-- ── HEADER ── -->
+<!-- ── HEADER ── -->
   <header>
     <div class="logo">
       <span class="logo-title">CODE BREAKER</span>
-      <span class="logo-sub">pathfinding engine v1.0</span>
+      <span class="logo-sub">DAA Project(Sem 4) </span>
     </div>
-    <div class="status-bar">
-      <div class="status-dot"></div>
-      <span>SYSTEM ONLINE</span>
-      <span>|</span>
-      <span>BFS · DIJKSTRA · A*</span>
-    </div>
-  </header>
+  </header> 
 
   <!-- ── MAIN ── -->
   <main>
@@ -33,7 +27,6 @@
       <!-- Mode selector -->
       <div class="panel">
         <div class="panel-header">
-          <span class="panel-icon">⚡</span>
           <h3>Game Mode</h3>
         </div>
         <div class="panel-body">
@@ -58,10 +51,32 @@
         </div>
       </div>
 
+
+      <!-- Controls -->
+      <div class="panel" style="margin-top:10px">
+        <div class="panel-header">
+          <h3>Controls</h3>
+        </div>
+        <div class="panel-body">
+          <div class="btn-group">
+            <button class="btn btn-primary" id="btn-solve">▶ SOLVE</button>
+            <button class="btn btn-secondary" id="btn-clear-path">✕ Clear Path</button>
+            <button class="btn btn-secondary" id="btn-clear-walls">◻ Clear Walls</button>
+            <button class="btn btn-danger" id="btn-new-grid">⟳ New Grid</button>
+          </div>
+          <div style="margin-top:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <label style="font-size:1.00rem;color:var(--text-dim);">Animation speed</label>
+              <span id="speed-label" style="font-size:1.00rem;color:var(--green);">3</span>
+            </div>
+            <input type="range" id="anim-speed" min="1" max="10" value="3" style="width:100%">
+          </div>
+        </div>
+      </div>
+
       <!-- Tools -->
       <div class="panel" style="margin-top:10px">
         <div class="panel-header">
-          <span class="panel-icon">🛠</span>
           <h3>Drawing Tools</h3>
         </div>
         <div class="panel-body">
@@ -92,28 +107,7 @@
         </div>
       </div>
 
-      <!-- Controls -->
-      <div class="panel" style="margin-top:10px">
-        <div class="panel-header">
-          <span class="panel-icon">▶</span>
-          <h3>Controls</h3>
-        </div>
-        <div class="panel-body">
-          <div class="btn-group">
-            <button class="btn btn-primary" id="btn-solve">▶ SOLVE</button>
-            <button class="btn btn-secondary" id="btn-clear-path">✕ Clear Path</button>
-            <button class="btn btn-secondary" id="btn-clear-walls">◻ Clear Walls</button>
-            <button class="btn btn-danger" id="btn-new-grid">⟳ New Grid</button>
-          </div>
-          <div style="margin-top:12px">
-            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-              <label style="font-size:0.65rem;color:var(--text-dim);">Anim speed</label>
-              <span id="speed-label" style="font-size:0.65rem;color:var(--cyan);">3</span>
-            </div>
-            <input type="range" id="anim-speed" min="1" max="10" value="3" style="width:100%">
-          </div>
-        </div>
-      </div>
+      
 
     </aside>
 
@@ -133,7 +127,6 @@
       <!-- Log -->
       <div class="panel" style="width:100%">
         <div class="panel-header">
-          <span class="panel-icon">📡</span>
           <h3>System Log</h3>
         </div>
         <div class="panel-body" style="padding:8px">
@@ -148,7 +141,6 @@
       <!-- Stats -->
       <div class="panel">
         <div class="panel-header">
-          <span class="panel-icon">📊</span>
           <h3>Statistics</h3>
         </div>
         <div class="panel-body">
@@ -184,7 +176,6 @@
       <!-- Algorithm comparison -->
       <div class="panel" style="margin-top:10px">
         <div class="panel-header">
-          <span class="panel-icon">⚖</span>
           <h3>Algorithm Compare</h3>
         </div>
         <div class="panel-body">
@@ -220,41 +211,40 @@
       <!-- Legend -->
       <div class="panel" style="margin-top:10px">
         <div class="panel-header">
-          <span class="panel-icon">🗺</span>
           <h3>Legend</h3>
         </div>
         <div class="panel-body">
           <div class="legend">
             <div class="legend-item">
-              <div class="legend-swatch" style="background:#00ff88"></div>
+              <div class="legend-swatch" style="background:#9bbc0f"></div>
               <span>Start node (A)</span>
             </div>
             <div class="legend-item">
-              <div class="legend-swatch" style="background:#ff3060"></div>
+              <div class="legend-swatch" style="background:#d8f0c0"></div>
               <span>End node (B)</span>
             </div>
             <div class="legend-item">
-              <div class="legend-swatch" style="background:#a855f7"></div>
+              <div class="legend-swatch" style="background:#d8f0c0"></div>
               <span>Required node (!)</span>
             </div>
             <div class="legend-item">
-              <div class="legend-swatch" style="background:#060a12;border:1px solid #1e3a5f"></div>
+              <div class="legend-swatch" style="background:#0f1f1a"></div>
               <span>Wall / obstacle</span>
             </div>
             <div class="legend-item">
-              <div class="legend-swatch" style="background:#0d1829"></div>
+              <div class="legend-swatch" style="background:#1f3a33"></div>
               <span>Open cell (cost 1)</span>
             </div>
             <div class="legend-item">
-              <div class="legend-swatch" style="background:#122030"></div>
+              <div class="legend-swatch" style="background:#3a706163"></div>
               <span>Weighted cell (cost 2–4)</span>
             </div>
             <div class="legend-item">
-              <div class="legend-swatch" style="background:#101e35"></div>
+              <div class="legend-swatch" style="background:#9cbc0f53"></div>
               <span>Visited / explored</span>
             </div>
             <div class="legend-item">
-              <div class="legend-swatch" style="background:#00e5ff"></div>
+              <div class="legend-swatch" style="background:#d8f0c0"></div>
               <span>Optimal path</span>
             </div>
             <div class="legend-item">
@@ -268,12 +258,6 @@
     </aside>
 
   </main>
-
-  <!-- ── FOOTER ── -->
-  <footer>
-    <span>Code Breaker — Multi-Objective Pathfinding Puzzle</span>
-    <span>BFS · Dijkstra · A* | C++ + JS implementation</span>
-  </footer>
 
 </div>
 
